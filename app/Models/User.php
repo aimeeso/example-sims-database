@@ -31,6 +31,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'tfa_code',
+        'tfa_expired_at',
     ];
 
     /**
@@ -40,5 +42,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'tfa_enabled' => 'bool',
     ];
 }

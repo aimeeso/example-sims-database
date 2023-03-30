@@ -18,6 +18,7 @@ class UserProfileResource extends JsonResource
             "id" => $this->id,
             "name" => $this->name,
             "email" => $this->email,
+            "tfa_enabled" => $this->tfa_enabled,
         ];
 
     }
