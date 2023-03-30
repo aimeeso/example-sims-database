@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'user',
         'passwords' => 'users',
     ],
 
@@ -40,6 +40,14 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'user' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
+        'admin' => [
+            'driver' => 'sanctum',
+            'provider' => 'admins',
+        ]
     ],
 
     /*
@@ -63,6 +71,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
         ],
 
         // 'users' => [
@@ -111,5 +123,10 @@ return [
     */
 
     'password_timeout' => 10800,
+
+    'tfa' => [
+        "enabled" => env('TFA_ENABLED', false),
+        "timeout" => env("TFA_TIMEOUT", 120)
+    ],
 
 ];
