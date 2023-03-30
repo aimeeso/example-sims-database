@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\TwoFactorRequest;
+use App\Http\Resources\Auth\UserProfileResource;
 use App\Mail\Auth\TwoFactorCodeMail;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -28,8 +30,25 @@ class AuthController extends Controller
         } else {
             $this->updateLoginTime($user);
             $user->currentAccessToken()?->delete(); // prevent muti-login
-            return $this->respondWithToken($user, ['member']);
+            return $this->respondWithToken($user, ['user']);
         }
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user($this->authGuard)->currentAccessToken()->delete();
+        return response()->noContent();
+    }
+
+    public function refresh(Request $request)
+    {
+        return $this->respondWithToken($request->user($this->authGuard), ['user']);
+    }
+
+    public function profile(Request $request)
+    {
+        $user = $request->user($this->authGuard);
+        return new UserProfileResource($user);
     }
 
     public function verify2fa(TwoFactorRequest $request)
@@ -46,7 +65,7 @@ class AuthController extends Controller
 
             $user->currentAccessToken()->delete();
             $this->updateLoginTime($user);
-            return $this->respondWithToken($user, ['member']);
+            return $this->respondWithToken($user, ['user']);
         }
 
         return new JsonResponse(["message" => "incorrect code."], 400);
@@ -79,10 +98,10 @@ class AuthController extends Controller
         return response()->noContent();
     }
 
-     /**
+    /**
      * Get the token array structure.
      *
-     * @param  string $token
+     * @param  User $user
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -116,5 +135,4 @@ class AuthController extends Controller
             'expires_in' => config('sanctum.expiration'),
         ]);
     }
-
 }
