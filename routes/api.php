@@ -18,22 +18,22 @@ Route::group([
     'middleware' => 'api',
     'prefix' => 'auth'
 ], function ($router) {
-    Route::post('/login', [App\Http\Controllers\Auth\AuthController::class, 'login']);
+    Route::post('/login', [App\Http\Controllers\UserAuthController::class, 'login']);
 });
 
 Route::group([
     'middleware' => ['auth:sanctum', 'abilities:2fa'],
     'prefix' => 'auth'
 ], function ($router) {
-    Route::post('/2fa-verify', [App\Http\Controllers\Auth\AuthController::class, 'verify2fa']);
-    Route::post('/2fa-regenerate', [App\Http\Controllers\Auth\AuthController::class, 'regenerate2fa']);
+    Route::post('/2fa-verify', [App\Http\Controllers\UserAuthController::class, 'verify2fa']);
+    Route::post('/2fa-regenerate', [App\Http\Controllers\UserAuthController::class, 'regenerate2fa']);
 });
 
 Route::group([
     'middleware' => ['auth:sanctum', 'abilities:user'],
     'prefix' => 'auth'
 ], function ($router) {
-    Route::get('/refresh', [App\Http\Controllers\Auth\AuthController::class, 'refresh']);
-    Route::post('/logout', [App\Http\Controllers\Auth\AuthController::class, 'logout']);
-    Route::get('/profile', [App\Http\Controllers\Auth\AuthController::class, 'profile']);
+    Route::get('/refresh', [App\Http\Controllers\UserAuthController::class, 'refresh']);
+    Route::post('/logout', [App\Http\Controllers\UserAuthController::class, 'logout']);
+    Route::get('/profile', [App\Http\Controllers\UserAuthController::class, 'profile']);
 });

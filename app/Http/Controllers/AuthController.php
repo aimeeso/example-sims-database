@@ -14,9 +14,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
-{
-    private $authGuard = 'user';
-
+{   
+    protected $authGuard;
+    
     public function login(LoginRequest $request)
     {
         $request->authenticate($this->authGuard);
@@ -30,7 +30,7 @@ class AuthController extends Controller
         } else {
             $this->updateLoginTime($user);
             $user->currentAccessToken()?->delete(); // prevent muti-login
-            return $this->respondWithToken($user, ['user']);
+            return $this->respondWithToken($user, [$this->authGuard]);
         }
     }
 
@@ -42,7 +42,7 @@ class AuthController extends Controller
 
     public function refresh(Request $request)
     {
-        return $this->respondWithToken($request->user($this->authGuard), ['user']);
+        return $this->respondWithToken($request->user($this->authGuard), [$this->authGuard]);
     }
 
     public function profile(Request $request)
@@ -65,7 +65,7 @@ class AuthController extends Controller
 
             $user->currentAccessToken()->delete();
             $this->updateLoginTime($user);
-            return $this->respondWithToken($user, ['user']);
+            return $this->respondWithToken($user, [$this->authGuard]);
         }
 
         return new JsonResponse(["message" => "incorrect code."], 400);
@@ -127,7 +127,7 @@ class AuthController extends Controller
      */
     protected function respondWithToken(User $user, array $ablilities)
     {
-        $token = $user->createToken('user', $ablilities);
+        $token = $user->createToken($this->authGuard, $ablilities);
         return response()->json([
             'access_token' => $token->plainTextToken,
             'ability' => $ablilities[0],
