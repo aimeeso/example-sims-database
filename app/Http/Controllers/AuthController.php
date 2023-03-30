@@ -24,7 +24,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->input('email'))->first();
 
 
-        if ($user->tfa_enabled) { // 2fa is enabled
+        if ($user->tfa_enabled && $this->authGuard == 'user') { // 2fa is enabled
             $this->generate2faCode($user);
             return $this->respondWithToken($user, ['2fa']);
         } else {
@@ -125,7 +125,7 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function respondWithToken(User $user, array $ablilities)
+    protected function respondWithToken($user, array $ablilities)
     {
         $token = $user->createToken($this->authGuard, $ablilities);
         return response()->json([
