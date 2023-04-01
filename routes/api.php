@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ContentController;
+use App\Http\Controllers\PackController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Public API
+Route::group([
+    'middleware' => 'api'
+], function ($router) {
+    Route::resource('packs', PackController::class)->only(['index', 'show']);
+    Route::resource('contents', ContentController::class)->only(['index', 'show']);
+});
+
+// Auth API before login
 Route::group([
     'middleware' => 'api',
     'prefix' => 'auth'
@@ -21,6 +32,7 @@ Route::group([
     Route::post('/login', [App\Http\Controllers\UserAuthController::class, 'login']);
 });
 
+// User 2fa API
 Route::group([
     'middleware' => ['auth:sanctum', 'abilities:2fa'],
     'prefix' => 'auth'
@@ -29,6 +41,8 @@ Route::group([
     Route::post('/2fa-regenerate', [App\Http\Controllers\UserAuthController::class, 'regenerate2fa']);
 });
 
+
+// User Auth API after login
 Route::group([
     'middleware' => ['auth:sanctum', 'abilities:user'],
     'prefix' => 'auth'

@@ -13,9 +13,9 @@ class ContentController extends Controller
     public function index(Request $request)
     {
         $pageSize = $request->query('pageSize');
-        $filter = $request->only(['packId']);
+        $packId = $request->query('packId');
 
-        $query = Content::filterPackId(isset($filter['packId']) ? $filter['packId'] : null);
+        $query = Content::filterPackId($packId);
 
         if ($pageSize) {
             return ContentResource::collection($query->paginate($pageSize));
