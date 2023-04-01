@@ -17,15 +17,15 @@ class PackSeeder extends Seeder
         $data = [
             [
                 "id" => 1,
-            "name"=> "Expansion Pack"
+                "name" => "Expansion Pack"
             ],
             [
                 "id" => 2,
-            "name"=> "Game Pack"
+                "name" => "Game Pack"
             ]
         ];
 
-        foreach($data as $d) {
+        foreach ($data as $d) {
             Pack::updateOrCreate($d);
         }
     }
