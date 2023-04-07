@@ -7,16 +7,16 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
-class PackTest extends TestCase
+class ContentTest extends TestCase
 {
     use RefreshDatabase;
 
     /**
-     * Test listing packs.
+     * Test listing contents.
      */
     public function test_index(): void
     {
-        $response = $this->get('/api/packs');
+        $response = $this->get('/api/contents');
 
         $response->assertStatus(200)
             ->assertJson(
@@ -26,18 +26,20 @@ class PackTest extends TestCase
                     fn (AssertableJson $json) =>
                     $json->whereAllType([
                         'name' => 'string',
+                        'description' => 'string',
+                        'image_path' => 'string',
                         'id' => 'integer'
-                    ])
+                    ])->etc()
                 )->etc()
             );
     }
 
     /**
-     * Test listing packs with pagination.
+     * Test listing contents with pagination.
      */
     public function test_index_pagination(): void
     {
-        $response = $this->get('/api/packs?page=1&pageSize=10');
+        $response = $this->get('/api/contents?page=1&pageSize=10');
 
         $response->assertStatus(200)
             ->assertJson(
@@ -49,16 +51,18 @@ class PackTest extends TestCase
                         ->where('current_page', 1) // check the pageNo query
                         ->etc()
                 )
-                ->has(
-                    'data.0',
-                    fn (AssertableJson $json) =>
-                    $json->whereAllType([
-                        'name' => 'string',
-                        'id' => 'integer'
-                    ])
+                    ->has(
+                        'data.0',
+                        fn (AssertableJson $json) =>
+                        $json->whereAllType([
+                            'name' => 'string',
+                            'description' => 'string',
+                            'image_path' => 'string',
+                            'id' => 'integer'
+                        ])
+                            ->etc()
+                    )
                     ->etc()
-                )
-                ->etc()
             );
     }
 }
