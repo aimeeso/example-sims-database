@@ -10,6 +10,8 @@ class Pack extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name'];
+
     public function contents(): HasMany
     {
         return $this->hasMany(Content::class);

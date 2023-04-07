@@ -10,10 +10,12 @@ class Content extends Model
 {
     use HasFactory;
 
+    protected $guards = [];
+
     protected $casts = [
-        "release_date" => 'date',
-        "eu_release_date" => 'date',
-        "console_release_date" => 'date',
+        "release_date" => 'datetime:Y-m-d',
+        "eu_release_date" => 'datetime:Y-m-d',
+        "console_release_date" => 'datetime:Y-m-d',
     ];
 
     public function pack(): BelongsTo
