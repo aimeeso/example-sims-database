@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::group([
     'middleware' => 'api'
 ], function ($router) {
-    Route::resource('packs', PackController::class)->only(['index', 'show']);
+    Route::resource('packs', PackController::class)->only(['index']);
     Route::resource('contents', ContentController::class)->only(['index', 'show']);
 });
 

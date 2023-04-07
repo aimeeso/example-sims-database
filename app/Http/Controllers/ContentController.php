@@ -23,4 +23,10 @@ class ContentController extends Controller
             return ContentResource::collection($query->get());
         }
     }
+
+    public function show(Request $request, Content $content)
+    {
+        return new ContentResource($content);
+        
+    }
 }
