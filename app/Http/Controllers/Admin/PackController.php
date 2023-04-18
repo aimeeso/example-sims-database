@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\PackController as BasePackController;
 use App\Http\Resources\PackResource;
 use App\Models\Pack;
