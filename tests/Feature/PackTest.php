@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Admin;
+use App\Models\Pack;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -88,5 +89,54 @@ class PackTest extends TestCase
                 )
                 ->etc()
             );
+
+        // Check database
+        $this->assertDatabaseHas('packs', [
+            'name' => 'New Pack',
+        ]);
+    }
+
+    public function test_update(): void
+    {
+        Sanctum::actingAs(
+            Admin::factory()->create(),
+            ['admin']
+        );
+
+        // create a new pack and get the id
+        /** @var \App\Models\Pack */
+        $pack = Pack::factory()->create();
+
+        $response = $this->put('/api/admin/packs/' . $pack->id, ['name' => 'Newly Named Pack']);
+
+        $response->assertStatus(204);
+
+        // Check database
+        $this->assertDatabaseHas('packs', [
+            'id' => $pack->id,
+            'name' => 'Newly Named Pack',
+        ]);
+    }
+
+    public function test_destroy(): void
+    {
+        Sanctum::actingAs(
+            Admin::factory()->create(),
+            ['admin']
+        );
+
+        // create a new pack and get the id
+        /** @var \App\Models\Pack */
+        $pack = Pack::factory()->create();
+        $id = $pack->id;
+
+        $response = $this->delete('/api/admin/packs/' . $pack->id);
+
+        $response->assertStatus(204);
+
+        // Check database
+        $this->assertDatabaseMissing('packs', [
+            'id' => $id,
+        ]);
     }
 }
