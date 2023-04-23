@@ -13,10 +13,10 @@ class ContentController extends BaseContentController
     public function store(Request $request)
     {
         $validated = $request->validate([
-            "pack_id" => "nullable|exists:packs,id",
+            "pack_id" => "required|exists:packs,id",
             "name" => "required|string",
             "description" => "present|string",
-            "image_path" => "present|string",
+            "image_path" => "nullable|string",
             "release_date" => "required|date",
             "eu_release_date" => "nullable|date",
             "console_release_date" => "required|date",
@@ -38,10 +38,10 @@ class ContentController extends BaseContentController
     public function update(Request $request, Content $content)
     {
         $validated = $request->validate([
-            "pack_id" => "nullable|exists:packs,id",
+            "pack_id" => "required|exists:packs,id",
             "name" => "required|string",
             "description" => "present|string",
-            "image_path" => "present|string",
+            "image_path" => "nullable|string",
             "release_date" => "required|date",
             "eu_release_date" => "nullable|date",
             "console_release_date" => "required|date",
