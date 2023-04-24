@@ -70,6 +70,32 @@ class ContentTest extends TestCase
             );
     }
 
+    public function test_show(): void
+    {
+        /** @var \App\Models\Content */
+        $content = Content::factory()->create();
+
+        $response = $this->get('/api/contents/' . $content->id);
+
+        $response->assertStatus(200)
+            ->assertJson(
+                fn (AssertableJson $json) =>
+                $json->has(
+                    'data',
+                    fn (AssertableJson $json) =>
+                    $json->where('pack.id', $content->pack_id)
+                    ->where('name', $content->name)
+                    ->where('description', $content->description)
+                    ->where('image_path', $content->image_path)
+                    ->where('release_date', $content->release_date)
+                    ->where('eu_release_date', $content->eu_release_date)
+                    ->where('console_release_date', $content->console_release_date)
+                    ->etc()
+                )
+                    ->etc()
+            );
+    }
+
     public function test_store(): void
     {
         Sanctum::actingAs(
