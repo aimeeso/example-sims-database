@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style class="main_style">
+        .layout-canvas-a {
+            background-color: #fff;
+            border: none;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            padding: 0;
+            width: 100%;
+        }
+
+        .layout-canvas-a>.header,
+        .layout-canvas-a>.section,
+        .layout-canvas-a>.footer {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            word-wrap: break-word;
+        }
+
+        .layout-canvas-a>.section {
+            margin: 10px 0;
+        }
+
+        .layout-canvas-a>.section>.columns {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            word-wrap: break-word;
+        }
+
+        body {
+            color: #000;
+            font-family: Arial;
+            font-size: 12px;
+            margin: 0 auto;
+            max-width: 1280px;
+        }
+
+        @media only screen and (max-width: 480px) {
+            .mobile-hidden {
+                display: none !important;
+            }
+
+            .responsive-td {
+                width: 100% !important;
+                display: block !important;
+                padding: 0 !important;
+            }
+        }
+
+        .layout-canvas-a>.section>.columns {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="layout layout-canvas-a">
+        <script runat="server">
+            Platform.Load("Core", "1");
+            try {
+        </script>
+        %%[
+        /* Constant values */
+        SET @currentDate = SystemDateToLocalDate(NOW())
+        SET @EndDate = '2023-07-13 3:00 PM'
+        SET @leadName = "mirror_free_ticket_jun_2023"
+        SET @leadSource = "eComm"
+        SET @leadFormType = "Engagement"
+        SET @customerLanguage = "zh"
+        set @currentDateTime = FormatDate(Now(),"iso")
+
+        IF DateDiff(@currentDate,@EndDate,"MI") < 0 THEN /* Expired */ ]%% <div style="padding: 10px 0px;">
+            <h2>此推廣已經結束。<br>
+                我們再次感謝您的支持。</h2>
+            <a href="https://www.fwd.com.hk/online-insurance/?utm_source=crm&utm_medium=lead&utm_campaign=jun-foodpanda"
+                style="font-size: 16px; font-family: Arial,'Noto Sans TC', 'Microsoft JhengHei', sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #E87722; border: 1px solid #E87722; padding: 10px 40px; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; width: 80px;margin: auto;">查看更多</a>
+    </div>
+    %%[
+    ELSE
+
+    SET @customerPhone = ""
+    SET @customerStories = ""
+    /* Get the input value */
+    IF RequestParameter("submitted") == true THEN
+    /* From custom form */
+    SET @customerPhone = RequestParameter("phone")
+    SET @customerStories = RequestParameter("reamrk_1")
+    ELSE
+    /* From email form */
+    SET @customerPhone = QueryParameter("phone")
+    SET @customerStories = QueryParameter("reamrk_1")
+    ENDIF
+
+    /* Validate incoming data */
+    @phoneValidation = RegExMatch(@customerPhone, "^[456789]{1}[0-9]{7}$", 0)
+    @storiesValidationLength = length(@customerStories)
+
+    IF (empty(phoneValidation) OR @storiesValidationLength == 0 OR @storiesValidationLength > 500) THEN
+
+    /* Input is not completed, show form */
+    ]%%
+    <form action="%%=RequestParameter('PageURL')=%%" method="post" id="foodpandaForm">
+        <div class="formFlex" style="display:flex;flex-wrap:wrap;flex-direction:column;">
+            <input type="tel" name="phone" placeholder="香港手提電話號碼">
+            <div class="errorParent" id="phoneErrorMessage">
+                <p class="errorWrapper">
+                    必須填寫手提電話號碼。
+                </p>
+            </div>
+            <input type="text" name="remark_1" placeholder="stories here">
+            <div class="errorParent" id="storyErrorMessage">
+                <p class="errorWrapper">
+                    必須填寫Story。
+                </p>
+            </div>
+            <input name="submitted" type="hidden" value="true">
+            <div style="display: flex;align-items: center;justify-content: center;padding-top: 10px;">
+                <input type="submit" value="提交"
+                    style="font-size: 16px; font-family: Arial,'Noto Sans TC', 'Microsoft JhengHei', sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #E87722; border: 1px solid #E87722; padding: 10px 40px; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;"
+                    id="submitButton">
+            </div>
+        </div>
+    </form>
+    %%[
+    ELSE
+        SET @customerPhoneLeadName = Concat(@customerPhone, "_", @leadName)
+
+        SET @existingPhone = LookupRows("fwd_foodpanda_test", "phone_leadformname", @customerPhoneLeadName)
+        IF (Rowcount(@existingPhone) > 0) THEN
+    ]%%
+    <div style="padding: 10px 0px;">
+        <h2>不好意思，每個手提電話號碼只能登記一次。您輸入的香港手提電話號碼已經登記此推廣。</h2>
+        <a href="%%=RequestParameter('PageURL')=%%"
+            style="font-size: 16px; font-family: Arial,'Noto Sans TC', 'Microsoft JhengHei', sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #E87722; border: 1px solid #E87722; padding: 10px 40px; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; width: 80px;margin: auto;">返回</a>
+    </div>
+    %%[
+    ELSE
+
+    SET @insertCount = insertData("fwd_foodpanda_test", 9, "phone", @customerPhone, "has_opt_in", "True", "lead_source",
+    @leadSource, "lead_form_type", @leadFormType, "phone_leadformname", @customerPhoneLeadName, "lead_form_name",
+    @leadName, "language", @customerLanguage, "create_date", @currentDate, "remark_1", @customerStories)
+
+    ]%%
+    <div style="padding: 10px 0px;">
+        <h2>您已成功登記，我們將於14日內發送換領通知至您的電郵地址。</h2>
+        <a href="https://www.fwd.com.hk/online-insurance/?utm_source=crm&utm_medium=lead&utm_campaign=jun-foodpanda"
+            style="font-size: 16px; font-family: Arial,'Noto Sans TC', 'Microsoft JhengHei', sans-serif; color: #FFFFFF; text-align: center; text-decoration: none; display: block; background-color: #E87722; border: 1px solid #E87722; padding: 10px 40px; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; width: 80px;margin: auto;">查看更多</a>
+    </div>
+    %%[
+    ENDIF
+
+    ENDIF
+
+    ENDIF
+    ]%%
+    <div class="header">
+        <div data-type="slot" data-key="header"></div>
+    </div>
+    <div class="section">
+        <div class="columns col1">
+            %%[IF False THEN]%%
+            <div data-type="slot" data-key="col1" data-allowed-blocks="iccloudpageblock" data-min-blocks="1"
+                data-max-blocks="1"></div>
+            %%[ENDIF]%%
+        </div>
+    </div>
+    <div class="footer">
+        <div data-type="slot" data-key="footer"></div>
+    </div>
+    <script runat="server">
+        } catch (e) {
+            Write("<b>Error Message:</b> " + Stringify(e.message) + "<br><br><b>Description:</b> " + Stringify(e.description));
+        }
+    </script>
+    <script>
+        function changeAttribute() {
+            // add minLength and pattern to phone
+            var phone = document.querySelector("input[type=tel]");
+            // Loop through the textareas and do something with each one
+            phone.maxLength = 8;
+            phone.minLength = 8;
+            phone.pattern = "^[456789]{1}[0-9]{7}$";
+            // addd minlength and maxlength to textarea
+            var textareas = document.getElementsByTagName("textarea");
+            // Loop through the textareas and do something with each one
+            for (var i = 0; i < textareas.length; i++) {
+                textareas[i].maxLength = 200;
+                textareas[i].minLength = 10;
+            }
+        }
+    </script>
+    </div>
+</body>
+
+</html>
